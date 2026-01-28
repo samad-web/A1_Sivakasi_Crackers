@@ -2,6 +2,7 @@ import './style.css'
 import { initCharts } from './charts.js'
 import { populateReportsTable, sampleData, exportToCSV, applyFilters, Pagination, updateRowData, getAllData } from './data.js'
 import { createEditModal, Dropdown } from './modal.js'
+import confetti from 'canvas-confetti'
 
 // Initialize app
 document.querySelector('#app').innerHTML = `
@@ -14,12 +15,12 @@ document.querySelector('#app').innerHTML = `
           <path d="M10 16L14 20L22 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           <defs>
             <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
-              <stop offset="0%" stop-color="#667eea"/>
-              <stop offset="100%" stop-color="#764ba2"/>
+              <stop offset="0%" stop-color="#dc2626"/>
+              <stop offset="100%" stop-color="#fbbf24"/>
             </linearGradient>
           </defs>
         </svg>
-        <span class="logo-text">Analytics Pro</span>
+        <span class="logo-text">A1 Sivakasi Crackers</span>
       </div>
       <button class="sidebar-toggle" id="sidebarToggle">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -528,6 +529,9 @@ function initEventListeners() {
       document.getElementById(`page-${pageName}`).classList.add('active')
 
       pageTitle.textContent = item.querySelector('span').textContent
+
+      // Trigger confetti on navigation
+      festiveConfettiBurst()
     })
   })
 
@@ -582,7 +586,8 @@ function initEventListeners() {
           const result = await response.json()
           console.log('n8n response:', result)
 
-          // Success feedback
+          // Success feedback with celebration
+          celebrationConfetti()
           alert('✅ Data submitted and synced successfully!')
           dataEntryForm.reset()
 
@@ -647,6 +652,99 @@ function initEventListeners() {
 
   // Initialize sync page button
   initSyncPageButton()
+
+  // Start festive confetti bursts
+  startFestiveConfetti()
+}
+
+// Festive Confetti Functions
+function startFestiveConfetti() {
+  // Initial burst on page load
+  setTimeout(() => {
+    festiveConfettiBurst()
+  }, 500)
+
+  // Random bursts every 8-15 seconds
+  function randomBurst() {
+    festiveConfettiBurst()
+    const nextBurst = Math.random() * 7000 + 8000 // 8-15 seconds
+    setTimeout(randomBurst, nextBurst)
+  }
+
+  setTimeout(randomBurst, 10000) // Start random bursts after 10s
+}
+
+function festiveConfettiBurst() {
+  const colors = ['#dc2626', '#ef4444', '#fbbf24', '#fcd34d', '#f59e0b']
+
+  // Create burst from random sides
+  const side = Math.random()
+
+  if (side < 0.33) {
+    // Burst from left
+    confetti({
+      particleCount: 100,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.6 },
+      colors: colors,
+      gravity: 1.2,
+      scalar: 1.2,
+      drift: 0.5
+    })
+  } else if (side < 0.66) {
+    // Burst from right
+    confetti({
+      particleCount: 100,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.6 },
+      colors: colors,
+      gravity: 1.2,
+      scalar: 1.2,
+      drift: -0.5
+    })
+  } else {
+    // Burst from center
+    confetti({
+      particleCount: 150,
+      angle: 90,
+      spread: 100,
+      origin: { x: 0.5, y: 0.3 },
+      colors: colors,
+      gravity: 1,
+      scalar: 1.5,
+      ticks: 200
+    })
+  }
+}
+
+function celebrationConfetti() {
+  // Multiple rapid bursts for celebrations
+  const duration = 3000
+  const animationEnd = Date.now() + duration
+  const colors = ['#dc2626', '#ef4444', '#fbbf24', '#fcd34d', '#f59e0b']
+
+    ; (function frame() {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.8 },
+        colors: colors
+      })
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.8 },
+        colors: colors
+      })
+
+      if (Date.now() < animationEnd) {
+        requestAnimationFrame(frame)
+      }
+    })()
 }
 
 // Reports Page Functionality
@@ -667,6 +765,7 @@ function initReportsPage() {
   // Export CSV button
   exportCSVBtn.addEventListener('click', () => {
     exportToCSV(currentData)
+    festiveConfettiBurst()
   })
 
   // Table search
@@ -943,6 +1042,7 @@ function initSyncPageButton() {
         if (syncStatus) {
           syncStatus.querySelector('span').textContent = 'Synced just now'
         }
+        celebrationConfetti()
         alert('✅ Data synced successfully with Google Sheets!')
       }, 2000)
     })
