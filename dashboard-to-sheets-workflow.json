@@ -1,0 +1,160 @@
+{
+    "name": "Dashboard to Google Sheets",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "dashboard-update",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-trigger",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                250,
+                300
+            ],
+            "webhookId": "dashboard-update"
+        },
+        {
+            "parameters": {
+                "values": {
+                    "string": [
+                        {
+                            "name": "Customer Name",
+                            "value": "={{ $json.customerName }}"
+                        },
+                        {
+                            "name": "Contact Number",
+                            "value": "={{ $json.contactNumber }}"
+                        },
+                        {
+                            "name": "Message Sent",
+                            "value": "={{ $json.messageSent }}"
+                        },
+                        {
+                            "name": "Payment Status",
+                            "value": "={{ $json.paymentStatus }}"
+                        },
+                        {
+                            "name": "Response Status",
+                            "value": "={{ $json.responseStatus }}"
+                        },
+                        {
+                            "name": "Date",
+                            "value": "={{ $json.date }}"
+                        },
+                        {
+                            "name": "Notes",
+                            "value": "={{ $json.notes }}"
+                        },
+                        {
+                            "name": "Timestamp",
+                            "value": "={{ $json.timestamp }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "set-data",
+            "name": "Format Data",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 3.2,
+            "position": [
+                470,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "YOUR_SHEET_ID_HERE",
+                    "mode": "id"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "Sheet1",
+                    "mode": "name"
+                },
+                "columns": {
+                    "mappingMode": "autoMapInputData",
+                    "value": {},
+                    "matchingColumns": [],
+                    "schema": []
+                },
+                "options": {}
+            },
+            "id": "google-sheets",
+            "name": "Google Sheets",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.2,
+            "position": [
+                690,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ {\n  \"success\": true,\n  \"message\": \"Data added to Google Sheets\",\n  \"rowAdded\": $json.updatedRange,\n  \"timestamp\": $now.toISO()\n} }}",
+                "options": {}
+            },
+            "id": "respond-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                910,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Format Data",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Data": {
+            "main": [
+                [
+                    {
+                        "node": "Google Sheets",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Google Sheets": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2024-01-28T14:00:00.000Z",
+    "versionId": "1"
+}
